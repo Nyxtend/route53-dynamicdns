@@ -21,5 +21,3 @@ ADD docker-init.sh .
 
 RUN chmod +x docker-init.sh
 CMD ["/work/docker-init.sh"]
-
-# Use ARGS to pass in environment variables (when used in K8s)
