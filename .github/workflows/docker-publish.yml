@@ -61,6 +61,7 @@ jobs:
       
       - name: Send update to dispatches router
         run: |
+          LOWERCASE_REPO=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
           curl -XPOST \
             -u "${{ secrets.PAT_USERNAME}}:${{secrets.PAT_TOKEN}}" \
             -H "Accept: application/vnd.github.everest-preview+json" \
@@ -73,7 +74,7 @@ jobs:
                   "dispatches_topics": ["update_k8s_config"],
                   "body": {
                     "repo": "${{ github.repository }}",
-                    "new_container": "ghcr.io/nyxtend/dogecoin-container:${{ github.sha }}"
+                    "new_container": "ghcr.io/${LOWERCASE_REPO}:${{ github.sha }}"
                   }
                 }
               }
