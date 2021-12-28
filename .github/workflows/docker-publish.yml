@@ -6,8 +6,6 @@ name: Build Docker Image
 # documentation.
 
 on:
-  schedule:
-    - cron: '28 20 * * 1'
   push:
     branches: [ main ]
   workflow_dispatch:
@@ -60,3 +58,22 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      
+      - name: Send update to dispatches router
+        run: |
+          curl -XPOST \
+            -u "${{ secrets.PAT_USERNAME}}:${{secrets.PAT_TOKEN}}" \
+            -H "Accept: application/vnd.github.everest-preview+json" \
+            -H "Content-Type: application/json" \
+            https://api.github.com/repos/Nyxtend/github-actions-dispatches-router/dispatches \
+              --data @- <<-ENDOFDOC
+              {
+                "client_payload": {
+                  "dispatches_topics": ["update_k8s_config"],
+                  "body": {
+                    "repo": "${{ github.repository }}",
+                    "new_container": "ghcr.io/nyxtend/dogecoin-container:${{ github.sha }}"
+                  }
+                }
+              }
+          ENDOFDOC
